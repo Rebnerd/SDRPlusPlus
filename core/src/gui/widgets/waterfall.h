@@ -11,6 +11,7 @@
 #define WATERFALL_RESOLUTION 1000000
 
 namespace ImGui {
+    // vfo stands for Variable Frequency Oscillator
     class WaterfallVFO {
     public:
         void setOffset(double offset);
@@ -211,6 +212,7 @@ namespace ImGui {
             _BANDPLAN_POS_COUNT
         };
 
+        // stuct
         ImVec2 fftAreaMin;
         ImVec2 fftAreaMax;
         ImVec2 freqAreaMin;
@@ -250,6 +252,7 @@ namespace ImGui {
         std::recursive_mutex latestFFTMtx;
         std::mutex texMtx;
         std::mutex smoothingBufMtx;
+
 
         float vRange;
 

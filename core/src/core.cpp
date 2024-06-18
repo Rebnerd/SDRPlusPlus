@@ -58,6 +58,7 @@ namespace core {
 };
 
 // main
+// just define that version numbers ?
 int sdrpp_main(int argc, char* argv[]) {
     flog::info("SDR++ v" VERSION_STR);
 
@@ -372,6 +373,7 @@ int sdrpp_main(int argc, char* argv[]) {
     // Run render loop (TODO: CHECK RETURN VALUE)
     backend::renderLoop();
 
+
     // On android, none of this shutdown should happen due to the way the UI works
 #ifndef __ANDROID__
     // Shut down all modules
@@ -384,7 +386,7 @@ int sdrpp_main(int argc, char* argv[]) {
 
     sigpath::iqFrontEnd.stop();
 
-    core::configManager.disableAutoSave();
+        core::configManager.disableAutoSave();
     core::configManager.save();
 #endif
 

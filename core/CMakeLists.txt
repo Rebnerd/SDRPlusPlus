@@ -29,7 +29,9 @@ endif (OPT_BACKEND_ANDROID)
 
 # Add code to dyn lib
 add_library(sdrpp_core SHARED ${SRC} ${BACKEND_SRC})
-
+add_executable(demo1 "src/learn_imgui/demo1.cpp")
+#target_include_directories(demo1 PUBLIC "src/")
+target_include_directories(demo1 PUBLIC "src/imgui")
 # Set compiler options
 target_compile_options(sdrpp_core PRIVATE ${SDRPP_COMPILER_FLAGS})
 

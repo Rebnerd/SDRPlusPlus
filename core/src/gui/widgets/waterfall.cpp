@@ -117,11 +117,21 @@ namespace ImGui {
         glGenTextures(1, &textureId);
     }
 
+    /*•	Locks the mutex to ensure thread safety.
+•	Calculates scaling factors for converting data values to screen positions.
+•	Draws the vertical and horizontal scales with labels.
+•	Renders the actual FFT data lines and their shadows.
+•	Optionally renders the held FFT data lines if the hold feature is enabled.
+•	Emits an event with redraw parameters.
+•	Draws the X-axis and Y-axis lines.
+     * */
     void WaterFall::drawFFT() {
         std::lock_guard<std::recursive_mutex> lck(latestFFTMtx);
         // Calculate scaling factor
+        // what is vRange parameter?
         float startLine = floorf(fftMax / vRange) * vRange;
         float vertRange = fftMax - fftMin;
+        // normalization?
         float scaleFactor = fftHeight / vertRange;
         char buf[100];
 
@@ -131,6 +141,7 @@ namespace ImGui {
         ImU32 text = ImGui::GetColorU32(ImGuiCol_Text);
         float textVOffset = 10.0f * style::uiScale;
 
+        // those accounts for adding grid , but the grid is not stationary,it's dynamically.
         // Vertical scale
         for (float line = startLine; line > fftMin; line -= vRange) {
             float yPos = fftAreaMax.y - ((line - fftMin) * scaleFactor);
@@ -145,6 +156,7 @@ namespace ImGui {
         // Horizontal scale
         double startFreq = ceilf(lowerFreq / range) * range;
         double horizScale = (double)dataWidth / viewBandwidth;
+
         float scaleVOfsset = 7 * style::uiScale;
         for (double freq = startFreq; freq < upperFreq; freq += range) {
             double xPos = fftAreaMin.x + ((freq - lowerFreq) * horizScale);
@@ -162,6 +174,8 @@ namespace ImGui {
         // Data
         if (latestFFT != NULL && fftLines != 0) {
             for (int i = 1; i < dataWidth; i++) {
+                // subtracting is for map the fft value to pixel value, coodinate matching.
+                //
                 double aPos = fftAreaMax.y - ((latestFFT[i - 1] - fftMin) * scaleFactor);
                 double bPos = fftAreaMax.y - ((latestFFT[i] - fftMin) * scaleFactor);
                 aPos = std::clamp<double>(aPos, fftAreaMin.y + 1, fftAreaMax.y);
@@ -174,6 +188,7 @@ namespace ImGui {
         }
 
         // Hold
+        // confuse: I don't see where is holding happening?
         if (fftHold && latestFFT != NULL && latestFFTHold != NULL && fftLines != 0) {
             for (int i = 1; i < dataWidth; i++) {
                 double aPos = fftAreaMax.y - ((latestFFTHold[i - 1] - fftMin) * scaleFactor);
@@ -214,9 +229,10 @@ namespace ImGui {
             std::lock_guard<std::mutex> lck(texMtx);
             window->DrawList->AddImage((void*)(intptr_t)textureId, wfMin, wfMax);
         }
-        
-        ImVec2 mPos = ImGui::GetMousePos();
 
+        // Get the current mouse position
+        ImVec2 mPos = ImGui::GetMousePos();
+        // Check if the mouse is within the waterfall area and if the controls are not locked.
         if (IS_IN_AREA(mPos, wfMin, wfMax) && !gui::mainWindow.lockWaterfallControls && !inputHandled) {
             for (auto const& [name, vfo] : vfos) {
                 window->DrawList->AddRectFilled(vfo->wfRectMin, vfo->wfRectMax, vfo->color);
