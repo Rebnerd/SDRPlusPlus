@@ -8,7 +8,6 @@ build/
 *.zip
 *.wav
 .DS_Store
-root_dev/
 root_dev_srv/
 Folder.DotSettings.user
 CMakeSettings.json
@@ -17,3 +16,4 @@ m17_decoder/libcorrect
 SDR++.app
 android/deps
 android/app/assets
+cmake-build-debug
